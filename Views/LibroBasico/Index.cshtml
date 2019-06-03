@@ -1,0 +1,155 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $.getJSON("/api/Libro", function (datos) {
+
+            var $tabla = $("#mitabla");
+            datos.forEach(function (libro) {
+
+                $tabla.append("<tr><td>" + libro.Isbn + "</td><td><input type='button' class='boton' value='detalle'/></td><td><input type='button' class='botonBorrar' value='borrar'/></td></tr>");
+
+            })
+        });
+
+        $("#mitabla").on("click", ".boton", function () {
+
+
+            var isbn = $(this).parent().prev().text();
+            $.getJSON("/api/Libro/" + isbn, function (datos) {
+
+                console.log(datos);
+            });
+
+        });
+
+        $("#mitabla").on("click", ".botonBorrar", function () {
+
+
+            var isbn = $(this).parent().prev().prev().text();
+            $.ajax({
+                url: '/api/Libro/' + isbn,
+                type: 'DELETE',
+                success: function (resultado) {
+
+                    alert("borrado");
+                    var $tabla = $("#mitabla");
+                    $table.empty();
+                    datos.forEach(function (libro) {
+
+                        $tabla.append("<tr><td>" + libro.Isbn + "</td><td><input type='button' class='boton' value='detalle'/></td><td><input type='button' class='botonBorrar' value='borrar'/></td></tr>");
+
+                    });
+
+                }
+            });
+
+
+        })
+
+
+        $("#botonInsertar").click(function () {
+
+            var objeto = {};
+
+            objeto.isbn = $("#isbn").val();
+            objeto.titulo = $("#titulo").val();
+            objeto.autor = $("#autor").val();
+            console.log(objeto);
+
+            $.ajax({
+                url: '/api/Libro/',
+                type: 'POST',
+                contentType: "application/json",
+                data: JSON.stringify(objeto),
+                success: function (resultado) {
+
+                    alert("ok");
+
+                }
+            });
+
+
+
+        })
+
+        $("#botonActualizar").click(function () {
+
+            var objeto = {};
+
+            objeto.isbn = $("#isbn2").val();
+            objeto.titulo = $("#titulo2").val();
+            objeto.autor = $("#autor2").val();
+
+
+            var isbnViejo = $("#isbn3").val();
+            console.log(objeto);
+
+            $.ajax({
+                url: '/api/Libro/' + isbnViejo,
+                type: 'PUT',
+                contentType: "application/json",
+                data: JSON.stringify(objeto),
+                success: function (resultado) {
+
+                    alert("ok");
+
+                }
+            });
+
+
+
+        })
+    })
+
+</script>
+
+<table id="mitabla"></table>
+
+<form>
+    <p>
+
+
+        <input type="text" name="isbn" id="isbn" />
+    </p>
+    <p>
+        <input type="text" name="titulo" id="titulo" />
+    </p>
+    <p>
+        <input type="text" name="autor" id="autor" />
+    </p>
+    <input type="button" id="botonInsertar" value="aceptar" />
+</form>
+
+
+<form id="form2">
+
+    <p>
+
+
+       Isbn viejo <input type="text" name="isbn" id="isbn3" />
+    </p>
+    <p>
+
+
+        Isbn nuevo <input type="text" name="isbn" id="isbn2" />
+    </p>
+    <p>
+        Titulo nuevo <input type="text" name="titulo" id="titulo2" />
+    </p>
+    <p>
+        Autor nuevo<input type="text" name="autor" id="autor2" />
+    </p>
+    <input type="button" id="botonActualizar" value="aceptar" />
+</form>
+
+
+
+
+
